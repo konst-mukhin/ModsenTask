@@ -2,38 +2,42 @@ package org.example.bookstorageservice.command;
 
 import org.example.bookstorageservice.command.delete.DeleteBookHandler;
 import org.example.bookstorageservice.command.delete.DeleteBookInput;
-import org.example.bookstorageservice.command.delete.DeleteBookOutput;
+import org.example.bookstorageservice.model.Message;
 import org.example.bookstorageservice.repository.BookRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.kafka.core.KafkaTemplate;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 class DeleteBookHandlerTest {
 
     @Mock
     private BookRepository bookRepository;
 
+    @Mock
+    private KafkaTemplate<String, Message> kafkaTemplate;
+
     @InjectMocks
     private DeleteBookHandler deleteBookHandler;
 
-    public DeleteBookHandlerTest() {
+    @BeforeEach
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void handle_ShouldDeleteBookById() {
+    void testHandle() {
         Integer bookId = 1;
         DeleteBookInput input = new DeleteBookInput();
         input.setId(bookId);
 
-        DeleteBookOutput output = deleteBookHandler.handle(input);
+        deleteBookHandler.handle(input);
 
         verify(bookRepository, times(1)).deleteById(bookId);
-        assertNotNull(output);
+        verify(kafkaTemplate, times(1)).send(eq("delete-topic"), any(Message.class));
     }
 }
