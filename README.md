@@ -24,7 +24,7 @@ Build and run:
 docker-compose up -d
 ```
 ### Postman
-[StorageCollection.postman_collection.json](https://github.com/user-attachments/files/18278521/StorageCollection.postman_collection.json)
+[StorageCollection.postman_collection (2).json](https://github.com/user-attachments/files/18278575/StorageCollection.postman_collection.2.json)
 
 [TrackerCollection.postman_collection.json](https://github.com/user-attachments/files/18278520/TrackerCollection.postman_collection.json)
 
