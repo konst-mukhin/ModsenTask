@@ -1,4 +1,4 @@
-# "ModsenTsk"
+# "ModsenTask"
 ## Description
 This project is a test task for Modsen.
 ## Technologies
@@ -27,3 +27,9 @@ docker-compose up -d
 [StorageCollection.postman_collection.json](https://github.com/user-attachments/files/18278521/StorageCollection.postman_collection.json)
 
 [TrackerCollection.postman_collection.json](https://github.com/user-attachments/files/18278520/TrackerCollection.postman_collection.json)
+
+You can view all endpoints in the swagger documentation.
+```
+http://localhost:8085/swagger-ui.html
+http://localhost:8086/swagger-ui.html
+```
