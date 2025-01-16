@@ -1,0 +1,34 @@
+{
+  "Servers" : {
+    "1" : {
+      "Group" : "Servers",
+      "Name" : "storage",
+      "Host" : "storage",
+      "Port" : 5432,
+      "MaintenanceDB" : "postgres",
+      "Username" : "postgres",
+      "PassFile" : "/pgadmin4/pgpass",
+      "SSLMode" : "prefer"
+    },
+    "2" : {
+      "Group" : "Servers",
+      "Name" : "tracker",
+      "Host" : "tracker",
+      "Port" : 5432,
+      "MaintenanceDB" : "postgres",
+      "Username" : "postgres",
+      "PassFile" : "/pgadmin4/pgpass",
+      "SSLMode" : "prefer"
+    },
+    "3" : {
+      "Group" : "Servers",
+      "Name" : "postgres",
+      "Host" : "postgres",
+      "Port" : 5432,
+      "MaintenanceDB" : "postgres",
+      "Username" : "postgres",
+      "PassFile" : "/pgadmin4/pgpass",
+      "SSLMode" : "prefer"
+    }
+  }
+}

@@ -14,7 +14,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table
+@Table(name = "_book_status")
 public class BookStatus {
     @Id
     @GeneratedValue
