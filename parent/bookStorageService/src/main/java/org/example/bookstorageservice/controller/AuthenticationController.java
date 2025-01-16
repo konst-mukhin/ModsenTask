@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.bookstorageservice.exception.BadRequest;
-import org.example.bookstorageservice.exception.Unauthorized;
 import org.example.bookstorageservice.service.authentication.AuthenticationService;
 import org.example.bookstorageservice.authentication.JwtAuthenticationResponse;
 import org.example.bookstorageservice.authentication.SignInRequest;
@@ -48,13 +47,13 @@ public class AuthenticationController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Пользователь успешно аутентифицирован",
                             content = @Content(schema = @Schema(implementation = JwtAuthenticationResponse.class))),
-                    @ApiResponse(responseCode = "401", description = "Некорректные учетные данные")
+                    @ApiResponse(responseCode = "403", description = "Некорректные учетные данные")
             }
     )
     @PostMapping("/authenticate")
     public ResponseEntity<JwtAuthenticationResponse> authenticate(
             @RequestBody SignInRequest request
-    ){
+    ) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 }

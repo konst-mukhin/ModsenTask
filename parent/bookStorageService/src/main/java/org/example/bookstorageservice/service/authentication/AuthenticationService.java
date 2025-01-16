@@ -6,7 +6,6 @@ import org.example.bookstorageservice.authentication.JwtService;
 import org.example.bookstorageservice.authentication.SignInRequest;
 import org.example.bookstorageservice.authentication.SignUpRequest;
 import org.example.bookstorageservice.exception.BadRequest;
-import org.example.bookstorageservice.exception.Unauthorized;
 import org.example.bookstorageservice.model.Role;
 import org.example.bookstorageservice.model.User;
 import org.example.bookstorageservice.repository.UserRepository;

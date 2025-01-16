@@ -22,11 +22,4 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         ErrorMessage message = new ErrorMessage(exception.getMessage());
         return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
     }
-
-    @ExceptionHandler(Unauthorized.class)
-    public ResponseEntity<ErrorMessage> unauthorized(
-            Unauthorized exception) {
-        ErrorMessage message = new ErrorMessage(exception.getMessage());
-        return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
-    }
 }
