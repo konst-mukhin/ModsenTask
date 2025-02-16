@@ -1,7 +1,7 @@
 package org.example.booktrackerservice.service.query;
 
 import org.example.booktrackerservice.dto.get.GetBookStatusDto;
-import org.example.booktrackerservice.exception.NotFound;
+import org.example.booktrackerservice.exception.EntityNotFound;
 import org.example.booktrackerservice.model.BookStatus;
 import org.example.booktrackerservice.repository.BookStatusRepository;
 import org.modelmapper.ModelMapper;
@@ -39,7 +39,7 @@ class QueryServiceTest {
     }
 
     @Test
-    void getAll_BooksAreAvailable() throws NotFound {
+    void getAll_BooksAreAvailable() throws EntityNotFound {
         when(bookStatusRepository.findAll()).thenReturn(Arrays.asList(bookStatus1, bookStatus2));
         when(modelMapper.map(any(BookStatus.class), eq(GetBookStatusDto.class)))
                 .thenReturn(new GetBookStatusDto(1, 1, false, false, null, null, null));
@@ -57,13 +57,13 @@ class QueryServiceTest {
 
         try {
             queryService.getAll();
-        } catch (NotFound e) {
+        } catch (EntityNotFound e) {
             assert(e.getMessage().equals("List is empty"));
         }
     }
 
     @Test
-    void getAll_NoAvailableBooks() throws NotFound {
+    void getAll_NoAvailableBooks() throws EntityNotFound {
         when(bookStatusRepository.findAll()).thenReturn(Arrays.asList(bookStatus1, bookStatus2));
         when(modelMapper.map(any(BookStatus.class), eq(GetBookStatusDto.class)))
                 .thenReturn(new GetBookStatusDto(1, 1, false, false, null, null, null));

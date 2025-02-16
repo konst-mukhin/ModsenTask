@@ -9,12 +9,12 @@ import lombok.AllArgsConstructor;
 import org.example.booktrackerservice.dto.get.GetBookStatusDto;
 import org.example.booktrackerservice.dto.update.back.ReturnBackBookStatusDto;
 import org.example.booktrackerservice.dto.update.take.TakeBookStatusDto;
-import org.example.booktrackerservice.exception.NotFound;
+import org.example.booktrackerservice.exception.BookWasDeleted;
+import org.example.booktrackerservice.exception.EntityNotFound;
 import org.example.booktrackerservice.service.command.CommandService;
 import org.example.booktrackerservice.service.query.QueryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,8 +33,8 @@ public class BookStatusController {
                             content = @Content(schema = @Schema(implementation = GetBookStatusDto[].class)))
             })
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
-    public ResponseEntity<List<GetBookStatusDto>> getAll() throws NotFound {
+    //@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    public ResponseEntity<List<GetBookStatusDto>> getAll() throws EntityNotFound {
         return ResponseEntity.status(HttpStatus.OK).body(queryService.getAll());
     }
 
@@ -45,9 +45,9 @@ public class BookStatusController {
                     @ApiResponse(responseCode = "404", description = "Книга не найдена")
             })
     @PutMapping("/take/{id}")
-    @PreAuthorize("hasAuthority('USER')")
+    //@PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<TakeBookStatusDto> take(@PathVariable Integer id)
-            throws NotFound{
+            throws EntityNotFound, BookWasDeleted {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(commandService.take(id));
     }
 
@@ -58,8 +58,9 @@ public class BookStatusController {
                     @ApiResponse(responseCode = "404", description = "Книга не найдена")
             })
     @PutMapping("/returnback/{id}")
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<ReturnBackBookStatusDto> returnBack(@PathVariable Integer id) throws NotFound{
+    //@PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<ReturnBackBookStatusDto> returnBack(@PathVariable Integer id)
+            throws EntityNotFound, BookWasDeleted {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(commandService.returnBack(id));
     }
 }

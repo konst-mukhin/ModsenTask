@@ -4,8 +4,8 @@ import org.example.bookstorageservice.dto.create.CreateBookDtoInput;
 import org.example.bookstorageservice.dto.create.CreateBookDtoOutput;
 import org.example.bookstorageservice.dto.update.UpdateBookDtoInput;
 import org.example.bookstorageservice.dto.update.UpdateBookDtoOutput;
-import org.example.bookstorageservice.exception.BadRequest;
-import org.example.bookstorageservice.exception.NotFound;
+import org.example.bookstorageservice.exception.IsbnAlreadyExists;
+import org.example.bookstorageservice.exception.EntityNotFound;
 import org.example.bookstorageservice.model.Book;
 import org.example.bookstorageservice.model.Message;
 import org.example.bookstorageservice.repository.BookRepository;
@@ -44,7 +44,7 @@ class CommandServiceTest {
     }
 
     @Test
-    void create_Success() throws BadRequest {
+    void create_Success() throws IsbnAlreadyExists {
         CreateBookDtoInput input = new CreateBookDtoInput("1234567890", "Title", "Author", "Genre", "Description");
         Book book = new Book(1, "1234567890", "Title", "Author", "Genre", "Description");
 
@@ -66,13 +66,13 @@ class CommandServiceTest {
         CreateBookDtoInput input = new CreateBookDtoInput("1234567890", "Title", "Author", "Genre", "Description");
         when(bookRepository.findByIsbn(input.getIsbn())).thenReturn(Optional.of(new Book()));
 
-        BadRequest exception = assertThrows(BadRequest.class, () -> commandService.create(input));
+        IsbnAlreadyExists exception = assertThrows(IsbnAlreadyExists.class, () -> commandService.create(input));
         assertEquals("Already exists. Change isbn", exception.getMessage());
         verify(bookRepository, never()).save(any(Book.class));
     }
 
     @Test
-    void update_Success() throws NotFound {
+    void update_Success() throws EntityNotFound {
         Integer bookId = 1;
         UpdateBookDtoInput input = new UpdateBookDtoInput("1234567890", "New Title", "New Author", "New Genre", "New Description");
         Book existingBook = new Book(bookId, "1234567890", "Title", "Author", "Genre", "Description");
@@ -95,13 +95,13 @@ class CommandServiceTest {
         UpdateBookDtoInput input = new UpdateBookDtoInput("1234567890", "New Title", "New Author", "New Genre", "New Description");
         when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
 
-        NotFound exception = assertThrows(NotFound.class, () -> commandService.update(bookId, input));
+        EntityNotFound exception = assertThrows(EntityNotFound.class, () -> commandService.update(bookId, input));
         assertEquals("Empty", exception.getMessage());
         verify(bookRepository, never()).save(any(Book.class));
     }
 
     @Test
-    void delete_Success() throws NotFound {
+    void delete_Success() throws EntityNotFound {
         Integer bookId = 1;
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(new Book()));
 
@@ -116,7 +116,7 @@ class CommandServiceTest {
         Integer bookId = 1;
         when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
 
-        NotFound exception = assertThrows(NotFound.class, () -> commandService.delete(bookId));
+        EntityNotFound exception = assertThrows(EntityNotFound.class, () -> commandService.delete(bookId));
         assertEquals("Wrong id", exception.getMessage());
         verify(bookRepository, never()).deleteById(bookId);
     }

@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import org.example.booktrackerservice.dto.create.CreateBookStatusDto;
 import org.example.booktrackerservice.dto.update.back.ReturnBackBookStatusDto;
 import org.example.booktrackerservice.dto.update.take.TakeBookStatusDto;
-import org.example.booktrackerservice.exception.NotFound;
+import org.example.booktrackerservice.exception.BookWasDeleted;
+import org.example.booktrackerservice.exception.EntityNotFound;
 import org.example.booktrackerservice.model.BookStatus;
 import org.example.booktrackerservice.model.Message;
 import org.example.booktrackerservice.repository.BookStatusRepository;
@@ -50,37 +51,31 @@ public class CommandService {
     }
 
     public TakeBookStatusDto take(Integer id)
-            throws NotFound {
-        Optional<BookStatus> bookStatus = bookStatusRepository.findByBookId(id);
-        if(bookStatus.isEmpty()) {
-            throw new NotFound("Wrong id");
+            throws EntityNotFound, BookWasDeleted {
+        BookStatus bookStatus = bookStatusRepository.findByBookId(id).orElseThrow(() -> new EntityNotFound("Wrong id"));
+        if(bookStatus.getIsDeleted()) {
+            throw new BookWasDeleted("This book was deleted");
         }
-        if(bookStatus.get().getIsDeleted()) {
-            throw new NotFound("This book was deleted");
+        if(!(bookStatus.getIsTaken())){
+            bookStatus.setIsTaken(true);
+            bookStatus.setTaken(LocalTime.now());
+            bookStatus.setReturned(null);
+            bookStatusRepository.save(bookStatus);
         }
-        if(!(bookStatus.get().getIsTaken())){
-            bookStatus.get().setIsTaken(true);
-            bookStatus.get().setTaken(LocalTime.now());
-            bookStatus.get().setReturned(null);
-            bookStatusRepository.save(bookStatus.get());
-        }
-        return modelMapper.map(bookStatus.get(), TakeBookStatusDto.class);
+        return modelMapper.map(bookStatus, TakeBookStatusDto.class);
     }
 
     public ReturnBackBookStatusDto returnBack(Integer id)
-            throws NotFound {
-        Optional<BookStatus> bookStatus = bookStatusRepository.findByBookId(id);
-        if(bookStatus.isEmpty()) {
-            throw new NotFound("Wrong id");
+            throws EntityNotFound, BookWasDeleted {
+        BookStatus bookStatus = bookStatusRepository.findByBookId(id).orElseThrow(() -> new EntityNotFound("Wrong id"));
+        if(bookStatus.getIsDeleted()) {
+            throw new BookWasDeleted("This book was deleted");
         }
-        if(bookStatus.get().getIsDeleted()) {
-            throw new NotFound("This book was deleted");
+        if(bookStatus.getIsTaken()) {
+            bookStatus.setIsTaken(false);
+            bookStatus.setReturned(LocalTime.now());
+            bookStatusRepository.save(bookStatus);
         }
-        if(bookStatus.get().getIsTaken()) {
-            bookStatus.get().setIsTaken(false);
-            bookStatus.get().setReturned(LocalTime.now());
-            bookStatusRepository.save(bookStatus.get());
-        }
-        return modelMapper.map(bookStatus.get(), ReturnBackBookStatusDto.class);
+        return modelMapper.map(bookStatus, ReturnBackBookStatusDto.class);
     }
 }

@@ -3,7 +3,8 @@ package org.example.booktrackerservice.service.command;
 import org.example.booktrackerservice.dto.create.CreateBookStatusDto;
 import org.example.booktrackerservice.dto.update.back.ReturnBackBookStatusDto;
 import org.example.booktrackerservice.dto.update.take.TakeBookStatusDto;
-import org.example.booktrackerservice.exception.NotFound;
+import org.example.booktrackerservice.exception.BookWasDeleted;
+import org.example.booktrackerservice.exception.EntityNotFound;
 import org.example.booktrackerservice.model.BookStatus;
 import org.example.booktrackerservice.model.Message;
 import org.example.booktrackerservice.repository.BookStatusRepository;
@@ -79,7 +80,7 @@ class CommandServiceTest {
     }
 
     @Test
-    void take_Success() throws NotFound {
+    void take_Success() throws EntityNotFound {
         when(bookStatusRepository.findByBookId(bookStatus.getBookId())).thenReturn(Optional.of(bookStatus));
         when(modelMapper.map(bookStatus, TakeBookStatusDto.class)).thenReturn(new TakeBookStatusDto());
 
@@ -96,7 +97,7 @@ class CommandServiceTest {
     void take_NotFound() {
         when(bookStatusRepository.findByBookId(bookStatus.getBookId())).thenReturn(Optional.empty());
 
-        NotFound exception = assertThrows(NotFound.class, () -> commandService.take(bookStatus.getBookId()));
+        EntityNotFound exception = assertThrows(EntityNotFound.class, () -> commandService.take(bookStatus.getBookId()));
         assertEquals("Wrong id", exception.getMessage());
     }
 
@@ -105,12 +106,12 @@ class CommandServiceTest {
         bookStatus.setIsDeleted(true);
         when(bookStatusRepository.findByBookId(bookStatus.getBookId())).thenReturn(Optional.of(bookStatus));
 
-        NotFound exception = assertThrows(NotFound.class, () -> commandService.take(bookStatus.getBookId()));
+        BookWasDeleted exception = assertThrows(BookWasDeleted.class, () -> commandService.take(bookStatus.getBookId()));
         assertEquals("This book was deleted", exception.getMessage());
     }
 
     @Test
-    void returnBack_Success() throws NotFound {
+    void returnBack_Success() {
         bookStatus.setIsTaken(true);
         when(bookStatusRepository.findByBookId(bookStatus.getBookId())).thenReturn(Optional.of(bookStatus));
         when(modelMapper.map(bookStatus, ReturnBackBookStatusDto.class)).thenReturn(new ReturnBackBookStatusDto());
@@ -128,7 +129,7 @@ class CommandServiceTest {
     void returnBack_NotFound() {
         when(bookStatusRepository.findByBookId(bookStatus.getBookId())).thenReturn(Optional.empty());
 
-        NotFound exception = assertThrows(NotFound.class, () -> commandService.returnBack(bookStatus.getBookId()));
+        EntityNotFound exception = assertThrows(EntityNotFound.class, () -> commandService.returnBack(bookStatus.getBookId()));
         assertEquals("Wrong id", exception.getMessage());
     }
 
@@ -137,7 +138,7 @@ class CommandServiceTest {
         bookStatus.setIsDeleted(true);
         when(bookStatusRepository.findByBookId(bookStatus.getBookId())).thenReturn(Optional.of(bookStatus));
 
-        NotFound exception = assertThrows(NotFound.class, () -> commandService.returnBack(bookStatus.getBookId()));
+        BookWasDeleted exception = assertThrows(BookWasDeleted.class, () -> commandService.returnBack(bookStatus.getBookId()));
         assertEquals("This book was deleted", exception.getMessage());
     }
 }

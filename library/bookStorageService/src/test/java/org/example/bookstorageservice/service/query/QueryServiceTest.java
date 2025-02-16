@@ -1,7 +1,7 @@
 package org.example.bookstorageservice.service.query;
 
 import org.example.bookstorageservice.dto.get.GetBookDto;
-import org.example.bookstorageservice.exception.NotFound;
+import org.example.bookstorageservice.exception.EntityNotFound;
 import org.example.bookstorageservice.model.Book;
 import org.example.bookstorageservice.repository.BookRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ class QueryServiceTest {
     }
 
     @Test
-    void getAll_Success() throws NotFound {
+    void getAll_Success() throws EntityNotFound {
         Book book1 = new Book(1, "1234567890123", "Title1", "Fiction", "Description1", "Author1");
         Book book2 = new Book(2, "9876543210987", "Title2", "Non-Fiction", "Description2", "Author2");
         when(bookRepository.findAll()).thenReturn(Arrays.asList(book1, book2));
@@ -52,13 +52,13 @@ class QueryServiceTest {
     void getAll_NotFound() {
         when(bookRepository.findAll()).thenReturn(List.of());
 
-        NotFound exception = assertThrows(NotFound.class, queryService::getAll);
+        EntityNotFound exception = assertThrows(EntityNotFound.class, queryService::getAll);
         assertEquals("List is empty", exception.getMessage());
         verify(bookRepository, times(1)).findAll();
     }
 
     @Test
-    void getById_Success() throws NotFound {
+    void getById_Success() throws EntityNotFound {
         Book book = new Book(1, "1234567890123", "Title1", "Fiction", "Description1", "Author1");
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
 
@@ -77,13 +77,13 @@ class QueryServiceTest {
     void getById_NotFound() {
         when(bookRepository.findById(1)).thenReturn(Optional.empty());
 
-        NotFound exception = assertThrows(NotFound.class, () -> queryService.getById(1));
+        EntityNotFound exception = assertThrows(EntityNotFound.class, () -> queryService.getById(1));
         assertEquals("Wrong id", exception.getMessage());
         verify(bookRepository, times(1)).findById(1);
     }
 
     @Test
-    void getByIsbn_Success() throws NotFound {
+    void getByIsbn_Success() throws EntityNotFound {
         Book book = new Book(1, "1234567890123", "Title1", "Fiction", "Description1", "Author1");
         when(bookRepository.findByIsbn("1234567890123")).thenReturn(Optional.of(book));
 
@@ -102,7 +102,7 @@ class QueryServiceTest {
     void getByIsbn_NotFound() {
         when(bookRepository.findByIsbn("1234567890123")).thenReturn(Optional.empty());
 
-        NotFound exception = assertThrows(NotFound.class, () -> queryService.getByIsbn("1234567890123"));
+        EntityNotFound exception = assertThrows(EntityNotFound.class, () -> queryService.getByIsbn("1234567890123"));
         assertEquals("Wrong isbn", exception.getMessage());
         verify(bookRepository, times(1)).findByIsbn("1234567890123");
     }

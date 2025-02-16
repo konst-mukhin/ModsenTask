@@ -11,8 +11,8 @@ import org.example.bookstorageservice.dto.create.CreateBookDtoOutput;
 import org.example.bookstorageservice.dto.get.GetBookDto;
 import org.example.bookstorageservice.dto.update.UpdateBookDtoInput;
 import org.example.bookstorageservice.dto.update.UpdateBookDtoOutput;
-import org.example.bookstorageservice.exception.BadRequest;
-import org.example.bookstorageservice.exception.NotFound;
+import org.example.bookstorageservice.exception.IsbnAlreadyExists;
+import org.example.bookstorageservice.exception.EntityNotFound;
 import org.example.bookstorageservice.service.command.CommandService;
 import org.example.bookstorageservice.service.query.QueryService;
 import org.springframework.http.HttpStatus;
@@ -39,7 +39,7 @@ public class BookController {
     @PostMapping("/book")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<CreateBookDtoOutput> create(@RequestBody CreateBookDtoInput createBookDtoInput)
-        throws BadRequest {
+        throws IsbnAlreadyExists {
         return ResponseEntity.status(HttpStatus.CREATED).body(commandService.create(createBookDtoInput));
     }
 
@@ -47,12 +47,13 @@ public class BookController {
             responses = {
                     @ApiResponse(responseCode = "202", description = "Книга успешно обновлена",
                             content = @Content(schema = @Schema(implementation = UpdateBookDtoOutput.class))),
-                    @ApiResponse(responseCode = "404", description = "Книга не найдена")
+                    @ApiResponse(responseCode = "404", description = "Книга не найдена"),
+                    @ApiResponse(responseCode = "400", description = "Некорректные данные запроса")
             })
     @PutMapping("/book/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<UpdateBookDtoOutput> update(@PathVariable Integer id, @RequestBody UpdateBookDtoInput updateBookDtoInput)
-        throws NotFound {
+        throws IsbnAlreadyExists, EntityNotFound {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(commandService.update(id, updateBookDtoInput));
     }
 
@@ -63,7 +64,7 @@ public class BookController {
             })
     @DeleteMapping("/book/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<HttpStatus> delete(@PathVariable Integer id) throws NotFound {
+    public ResponseEntity<HttpStatus> delete(@PathVariable Integer id) throws EntityNotFound {
         commandService.delete(id);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
@@ -76,7 +77,7 @@ public class BookController {
             })
     @GetMapping("/books")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
-    public ResponseEntity<List<GetBookDto>> getAll() throws NotFound{
+    public ResponseEntity<List<GetBookDto>> getAll() throws EntityNotFound {
         return ResponseEntity.status(HttpStatus.OK).body(queryService.getAll());
     }
 
@@ -88,7 +89,7 @@ public class BookController {
             })
     @GetMapping("/book/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
-    public ResponseEntity<GetBookDto> getById(@PathVariable Integer id) throws NotFound {
+    public ResponseEntity<GetBookDto> getById(@PathVariable Integer id) throws EntityNotFound {
         return ResponseEntity.status(HttpStatus.OK).body(queryService.getById(id));
     }
 
@@ -100,7 +101,7 @@ public class BookController {
             })
     @GetMapping("/book/isbn/{isbn}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
-    public ResponseEntity<GetBookDto> getByIsbn(@PathVariable String isbn) throws NotFound {
+    public ResponseEntity<GetBookDto> getByIsbn(@PathVariable String isbn) throws EntityNotFound {
         return  ResponseEntity.status(HttpStatus.OK).body(queryService.getByIsbn(isbn));
     }
 }
