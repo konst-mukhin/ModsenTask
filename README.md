@@ -1,6 +1,4 @@
-# ModsenTask
-## Description
-"ModsenTask" is a test project to Modsen.
+# Library
 ## Technologies
 - Spring, Boot.
 - ORM:Spring Data Jpa.
